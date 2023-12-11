@@ -12,7 +12,7 @@ During self-play, at each time step $t$ AlphaZero runs MCTS simulations over gam
 
 At each iteration of the simulation: 
 - If state $s$ is not in the tree, we evaluate and add $s$ as a node in the tree. we evaluate the state using $f$ to return $P(s, a), v = f(s)$, where $P(s, a)$ is the probability distribution over all possible actions and $v$ is the estimated value of $s$ ($+v$ or $-v$ depending on perspective of player). In our new node $s$ we,  
-  - $P(s, a)$
+  - set $P(s, a)$
   - initialize mean action values $Q(s, a) = 0$ 
   - initialize action counts $N(s, a) = 0$. 
 - Then, we backprop the value $v$ up the trajectory of edges $(s_0, a_0), (s_1, a_1), \ldots$ that lead to the leaf node $s$. Along this trajectory, we 
