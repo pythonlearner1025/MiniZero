@@ -16,8 +16,7 @@ def play_human():
   game.render()
 
 def idx2move(idx,size):
-  if idx == size*size:
-    return -1,-1
+  if idx == size*size: return -1,-1
   j = idx%size
   i = (idx-j)//size
   return i,j
@@ -74,9 +73,7 @@ def train_net(net, buffer, train_iters=1000, BS=32):
       loss, grad = loss_and_grad_fn(net,X,y_pi,y_v,reg)
       optimizer.learning_rate = anneal_lr(i)
       optimizer.update(net, grad)
-      # yeah idk wtf this does
-      #mx.eval(net.parameters(), optimizer.state)
-      print(loss)
+      print(loss.item())
   return net
 
 # t goes towards 0 as play progresses.

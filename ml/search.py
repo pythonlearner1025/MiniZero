@@ -5,8 +5,7 @@ import numpy as np
 import math
 
 def idx2move(idx,size):
-  if idx == size*size:
-    return -1,-1
+  if idx == size*size: return -1,-1
   j = idx%size
   i = (idx-j)//size
   return i,j
@@ -37,10 +36,8 @@ class MCTS:
     if s not in self.visited:
       self.visited.add(s)
       x = features(game)
-      x = mx.reshape(x,[1,*x.shape], stream=mx.cpu)
-      p,v = net(x)
-      self.P[s] = np.array(p.squeeze())
-      v = v.item()
+      p,v = net(mx.reshape(x,[1,*x.shape], stream=mx.cpu))
+      self.P[s], v = np.array(p.squeeze()), v.item()
       if root:
         self.P[s] = 0.75*self.P[s]+0.25*np.random.dirichlet([0.3]*self.P[s].shape[-1])
       self.Q[s] = np.zeros(len(self.P[s]))
@@ -56,20 +53,16 @@ class MCTS:
         best_mv = move,a
     
     best_move,a = best_mv
-    #st = time.perf_counter()
     game.move(best_move)
-    #e = time.perf_counter()
-    #print(f'inference: {(e-st)*1000:7.3f} ms')
     v = self.search(game, net)
+
     # count actions that result in ties as losses
     av = -1 if v==0 else v
     self.Q[s][a] = (self.N[s][a]*self.Q[s][a]+av)/(self.N[s][a]+1)
     self.N[s][a] += 1
     return -v 
   
-  # TODO add temp
   def pi(self, game: Go, t=1):
-
     def softmax(x):
       shift_x = x-np.max(x)
       exps = np.exp(shift_x)
