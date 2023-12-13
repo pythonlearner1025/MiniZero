@@ -36,3 +36,15 @@ In essence, the policy's likelihood of choosing an action is proportional to its
 Throughout self-play we collect experience data $(s_t, \pi_t, v_t)$ corresponding to game state, MCTS policy at that state, and true value of that state (assigned as either $+1$ or $-1$ after the game has terminated & been scored) at time step $t$ (equal to move number in Go). 
 
 We then sample training data uniformly from this experience buffer for training. The neural network is updated to match its predictions $P, v = f(s_t)$ with $\pi_t$ and $v_t$ from the experience buffer. This can be interpreted as projecting the MCTS policy into the neural network function space, such that it will learn to mimic the stronger policy learned through self-play.
+
+# Installation 
+
+```bash
+git clone https://github.com/pythonlearner1025/AlphaZero.git
+cd AlphaZero
+pip install -r requirements.txt
+python main.py
+```
+
+Saving the weights and playing against a human player is yet unimplemented. The ```main.py``` file only trains the AlphaZero agent on a 5x5 board for now.
+

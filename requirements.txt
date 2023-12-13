@@ -1,0 +1,20 @@
+certifi==2023.11.17
+charset-normalizer==3.3.2
+filelock==3.13.1
+fsspec==2023.12.1
+huggingface-hub==0.19.4
+idna==3.6
+mlx==0.0.4
+numpy @ file:///Users/runner/miniforge3/conda-bld/numpy_1700874783284/work/dist/numpy-1.26.2-cp312-cp312-macosx_11_0_arm64.whl#sha256=383faf2d870650fe385a809f2e9c71086b2b2dc1a16c7005c91b047114ba218f
+packaging==23.2
+Pillow==10.1.0
+pyglet==2.0.10
+PyYAML==6.0.1
+regex==2023.10.3
+requests==2.31.0
+safetensors==0.4.1
+setuptools==68.2.2
+tqdm==4.66.1
+typing_extensions==4.8.0
+urllib3==2.1.0
+wheel==0.42.0
