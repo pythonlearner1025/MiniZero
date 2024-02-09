@@ -1,4 +1,4 @@
-# AlphaZero for 5x5 Go - An MLX Implementation
+# MiniZero: An MLX Implementation of AlphaZero for Go
 
 AlphaZero for 5x5 Go using the MLX framework. The aim is to train a 5x5 Go agent on a M1 Macbook Pro that can consistently beat me. Although 5x5 Go is significantly scaled down from 19x19 Go, it still has a game tree complexity of $9.3 \times 10^{20}$ with an average game length of 15 moves, making it infeasible to solve (at least for I, who does not have a supercomputer). Therefore, a more intelligent approach is necessary to reach superhuman performance.
 
