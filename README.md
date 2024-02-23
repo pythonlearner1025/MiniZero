@@ -40,8 +40,8 @@ We then sample training data uniformly from this experience buffer for training.
 # Installation 
 
 ```bash
-git clone https://github.com/pythonlearner1025/AlphaZero.git
-cd AlphaZero
+git clone https://github.com/pythonlearner1025/MiniZero.git
+cd MiniZero
 pip install -r requirements.txt
 python main.py
 ```
