@@ -14,28 +14,28 @@ At each iteration of the simulation:
 - If state $s$ is not in the tree, we evaluate and add $s$ as a node in the tree. we evaluate the state using $f$ to return $P(s, a), v = f(s)$, where $P(s, a)$ is the probability distribution over all possible actions and $v$ is the estimated value of $s$ ($+v$ or $-v$ depending on perspective of player). In our new node $s$ we,  
   - set $P(s, a)$
   - initialize mean action values $Q(s, a) = 0$ 
-  - initialize action counts $N(s, a) = 0$. 
-- Then, we backprop the value $v$ up the trajectory of edges $(s_0, a_0), (s_1, a_1), \ldots$ that lead to the leaf node $s$. Along this trajectory, we 
-  - update the mean action value of each edge $Q(s_x, a_x) = \frac{N(s_x, a_x) \times Q(s_x, a_x) + v}{N(s_x, a_x) + 1}$ 
-  - increment the visit count of the action $N(s_x, a_x)$ by 1.     
-- We then select the best move $a$ to play from the current state $s$ using the formula $a = \text{argmax} \left[ Q(s, a) + \text{cpuct} \times P(s, a) \times \frac{\sqrt{N(s, b)}}{1 + N(s, a)} \right]$
-- We then transition to the next state $s'$ from $s$ by taking action $a$. We recursively run search over this state $s'$ until the game terminates.
+  - initialize action counts $N(s, a) = 0$.      
+- We then select the best move $a$ to play from the current state $s$ using the modified Upper Confidence Bound (UCB) formula $a = \text{argmax} \left[ Q(s, a) + \text{cpuct} \times P(s, a) \times \frac{\sqrt{N(s, b)}}{1 + N(s, a)} \right]$. The term added to the right of the action value ensures we continue exploring by favoring unlikely actions. 
+  - We then transition to the next state $s'$ from $s$ by taking action $a$. We recursively run search over this state $s'$ until the game terminates.
+- When we reach a terminal state $s_term$, we've done so by traversing a trajectory of edges$(s_0, a_0), (s_1, a_1), \ldots$. We now backprop the value $v$ (+1 or -1 depending on which turn wins) up the trajectory until we hit our beginning state $s$. So for every visited edge, we: 
+  - update its action value $Q(s_x, a_x) = \frac{N(s_x, a_x) \times Q(s_x, a_x) + v}{N(s_x, a_x) + 1}$ 
+  - increment the visit count of the edge $N(s_x, a_x)$ by 1.
 
-We can interpret the simulation as building a game tree using this search control strategy: 
+We can interpret each MCTS simulation as building a game tree using this search control strategy: 
 - $Q(s, a) + U(s, a)$, where $U(s, a) = \text{cpuct} \times P(s, a) \times \frac{\sqrt{N(s, b)}}{1 + N(s, a)}$
 - $\text{cpuct}$ can be seen as a constant determining the level of exploration.
 - Initially, the search control strategy prefers actions with high probability and low visit count, but asymptotically prefers actions with high action value
 
-After rounds of simulation, we sample action $a$ for state $s$ using the MCTS policy, which is the probability distribution over all legal actions. The policy is given by:
+Once we exit the simulation loop, we greedily pick $a$ for state $s$ using the MCTS policy, which is the probability distribution over all legal actions. The policy is given by:
 - $\pi = \frac{N(s, a)^{\frac{1}{t}}}{\sum_b N(s, b)^{\frac{1}{t}}}$
 
-In essence, the policy's likelihood of choosing an action is proportional to its visit count relative to all other actions' visit counts.
+Notice the policy's likelihood of choosing an action is proportional to its visit count relative to all other actions' visit counts.
 
 # Training After Self-Play
 
-Throughout self-play we collect experience data $(s_t, \pi_t, v_t)$ corresponding to game state, MCTS policy at that state, and true value of that state (assigned as either $+1$ or $-1$ after the game has terminated & been scored) at time step $t$ (equal to move number in Go). 
+After each MCTS simulation, we collect experience data $(s_t, \pi_t, v_t)$ and store it in our experience buffer. The data we store is the state, the MCTS policy at that state, and the true value of that state ($+1$ if the game is won by the same turn as current state $s_t$'s turn, $-1$ otherwise) at time step $t$ (equal to move number in Go). 
 
-We then sample training data uniformly from this experience buffer for training. The neural network is updated to match its predictions $P, v = f(s_t)$ with $\pi_t$ and $v_t$ from the experience buffer. This can be interpreted as projecting the MCTS policy into the neural network function space, such that it will learn to mimic the stronger policy learned through self-play.
+We then sample training data uniformly from this experience buffer for training. Value/Policy network is updated to match its predictions $P, v = f(s_t)$ with $\pi_t$ and $v_t$ from the experience buffer. Recall $\pi_t$ is policy the MCTS simulation learns using the $P$ and $v$ estimates of network $f$ itself. So we are doing bootstrapping, using estimated value to build some simulation policy, updating the network to produce improved $v'$ estimates closer to true $v_t$, then using this $v'$ in future MCTS search control strategies to select stronger moves which build a stronger simulation policy. At the same time, we are projecting the MCTS policy into the neural network function space, such that it will learn to mimic the stronger policy learned through self-play. 
 
 # Installation 
 
